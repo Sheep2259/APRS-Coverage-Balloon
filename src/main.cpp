@@ -17,10 +17,15 @@ void setup() {
 
 void loop() {
   
-  transmit_lora();
-  delay(4000);
-  transmit_2m();
-  delay(4000);
+  for (int i = 0; i < 1; i++) {
+    transmit_lora();
+    delay(2000);
+  }
+
+  for (int i = 0; i < 1; i++) {
+    transmit_2m();
+    delay(2000);
+  }
 
 }
 

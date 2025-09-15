@@ -2,13 +2,18 @@
 #include <RadioLib.h>
 #include <Arduino.h>
 #include <SPI.h>
+#include <pindefs.h>
+
+
+ SX1278 radio = new Module(sxNSS_pin, sxDIO0_pin, sxRESET_pin, sxDIO1_pin);
+  AFSKClient audio(&radio, sxDIO2_pin);
+  AX25Client ax25(&audio);
+  APRSClient aprs(&ax25);
+
+  APRSClient loraaprs(&radio);
 
 
 void transmit_2m(){
-  SX1278 radio = new Module(16, 2, 17, 5);
-  AFSKClient audio(&radio, 21);
-  AX25Client ax25(&audio);
-  APRSClient aprs(&ax25);
 
   // initialize SX1278 for 2m APRS
   Serial.print(F("[SX1278] Initializing ... "));
@@ -70,18 +75,15 @@ void transmit_2m(){
 
 
 void transmit_lora(){
-  SX1278 radio = new Module(16, 2, 17, 5);
-  APRSClient loraaprs(&radio);
-
 
   
   // initialize SX1278 with the settings necessary for LoRa iGates
   Serial.print(F("[SX1278] Initializing ... "));
   // frequency:                   433.775 MHz
   // bandwidth:                   125 kHz
-  // spreading factor:            12
-  // coding rate:                 4/5
-  int radiobeginstate = radio.begin(433.775, 125, 12, 5);
+  // spreading factor:            9
+  // coding rate:                 4/7
+  int radiobeginstate = radio.begin(433.775, 125, 9, 7);
 
   // when using one of the non-LoRa modules for AX.25
   // (RF69, CC1101, Si4432 etc.), use the basic begin() method
