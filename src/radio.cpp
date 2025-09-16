@@ -13,7 +13,7 @@
   APRSClient loraaprs(&radio);
 
 
-void transmit_2m(){
+void transmit_2m(char destination[], char latitude[], char longitude[], char message[]){
 
   // initialize SX1278 for 2m APRS
   Serial.print(F("[SX1278] Initializing ... "));
@@ -57,12 +57,13 @@ void transmit_2m(){
 
 
   Serial.println(F("[APRS] Sending location reports"));
-  
+  /*
   // send a location with message
   char destination[] = "APRS";
   char latitude[] = "4911.67N";
   char longitude[] = "01635.96E";
   char message[] = "vscode test";
+  */
   int sendstate = aprs.sendPosition(destination, 0, latitude, longitude, message);
 
   Serial.println(F("[APRS] All done!"));
@@ -74,7 +75,7 @@ void transmit_2m(){
 
 
 
-void transmit_lora(){
+void transmit_lora(char destination[], char latitude[], char longitude[], char message[]){
 
   
   // initialize SX1278 with the settings necessary for LoRa iGates
@@ -116,13 +117,15 @@ void transmit_lora(){
 
 
   Serial.print(F("[APRS] Sending position ... "));
-  
+
+  /*
   // send a location with message
   // SSID is set to 1, as APRS over LoRa uses WIDE1-1 path by default
   char destination[] = "APRS";
   char latitude[] = "4911.67N";
   char longitude[] = "01635.96E";
   char message[] = "I'm here! LORA APRS";
+  */
   int state = loraaprs.sendPosition(destination, 1, latitude, longitude, message);
 
 
