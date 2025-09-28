@@ -4,12 +4,12 @@
 #include PIN_CONFIG
 
 
- SX1278 radio = new Module(sxNSS_pin, sxDIO0_pin, sxRESET_pin, sxDIO1_pin);
-  AFSKClient audio(&radio, sxDIO2_pin);
-  AX25Client ax25(&audio);
-  APRSClient aprs(&ax25);
+SX1278 radio = new Module(sxNSS_pin, sxDIO0_pin, sxRESET_pin, sxDIO1_pin);
+AFSKClient audio(&radio, sxDIO2_pin);
+AX25Client ax25(&audio);
+APRSClient aprs(&ax25);
 
-  APRSClient loraaprs(&radio);
+APRSClient loraaprs(&radio);
 
 
 void transmit_2m(char callsign[], char destination[], char latitude[], char longitude[], char message[]){

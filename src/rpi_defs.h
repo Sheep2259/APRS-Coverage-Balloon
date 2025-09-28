@@ -11,7 +11,12 @@
 // For 2m aprs, uses DIO2 connected to 21
 
 
-// sx1278 pin defs, have to connect rest of SPI pins
+// sx1278 pin defs
+constexpr int sxSCK_pin = 2;  // 2, 6, 18, 22  } alternative pins
+constexpr int sxMOSI_pin = 3;     // 3, 7, 19, 23  } 
+constexpr int sxMISO_pin = 0;     // 0, 4, 16, 20  }
+constexpr int sxCS_pin = 1;       // 1, 5, 17, 21  }
+
 constexpr int sxNSS_pin = 16;
 constexpr int sxDIO0_pin = 2;
 constexpr int sxRESET_pin = 17;
@@ -26,3 +31,4 @@ constexpr int gpsRX_pin = 9;
 
 // other pin defs
 constexpr int vsense_pin = 26;
+

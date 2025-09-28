@@ -2,12 +2,18 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <radio.h>
-
+#include PIN_CONFIG
 
 
 void setup() {
   Serial.begin(115200);
   Serial.print("test");
+  
+  SPI.setRX(sxMISO_pin); // MISO
+  SPI.setTX(sxMOSI_pin); // MOSI
+  SPI.setSCK(sxSCK_pin); // SCK
+  SPI.setCS(sxCS_pin);   // CSn
+  SPI.begin();
 }
 
 
