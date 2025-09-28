@@ -1,4 +1,4 @@
-// Contains all pin definitions.
+// Contains pin definitions
 
 
 
