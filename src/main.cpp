@@ -8,7 +8,6 @@
 void setup() {
   Serial.begin(115200);
   Serial.print("test");
-
 }
 
 
@@ -17,8 +16,7 @@ void setup() {
 
 
 void loop() {
-
-
+  char callsign[] = "M7CWV";
   char destination[] = "APRS";
   char latitude[] = "4911.67N";
   char longitude[] = "01635.96E";
@@ -27,12 +25,12 @@ void loop() {
 
   
   for (int i = 0; i < 1; i++) {
-    transmit_2m(destination, latitude, longitude, message2m);
+    transmit_2m(callsign, destination, latitude, longitude, message2m);
     delay(2000);
   }
 
   for (int i = 0; i < 1; i++) {
-    transmit_lora(destination, latitude, longitude, messagelora);
+    transmit_lora(callsign, destination, latitude, longitude, messagelora);
     delay(2000);
   }
 

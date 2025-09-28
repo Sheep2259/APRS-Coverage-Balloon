@@ -20,9 +20,9 @@ constexpr int sxDIO2_pin = 21;
 
 
 // gps pin defs
-constexpr int gpsTX_pin = 32;
-constexpr int gpsRX_pin = 33;
+constexpr int gpsTX_pin = 8;
+constexpr int gpsRX_pin = 9;
 
 
 // other pin defs
-constexpr int vsense_pin = 27;
+constexpr int vsense_pin = 26;
