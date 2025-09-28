@@ -2,7 +2,7 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <radio.h>
-#include PIN_CONFIG
+#include <rpi_defs.h>
 
 
 void setup() {
