@@ -2,6 +2,7 @@ things that need implementation
 
 gps functionality
 gps coords to aprs format
+should move gps to seperate file
 
 voltage measuring and reporting   DONE
 

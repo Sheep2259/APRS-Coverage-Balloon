@@ -25,9 +25,10 @@ constexpr int sxDIO2_pin = 27;
 
 
 // gps pin defs
-constexpr int gpsTX_pin = 4;
-constexpr int gpsRX_pin = 5;
+constexpr int gpsTXPin = 4;
+constexpr int gpsRXPin = 5;
 
+constexpr int  GPSBaud = 9600;
 
 // other pin defs
 constexpr int vsensesolar_pin = 28; // uses 0.5x voltage divider
