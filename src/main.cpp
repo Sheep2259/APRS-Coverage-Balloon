@@ -13,6 +13,11 @@ int solarvoltage;
 int counter = 0;
 int seconds;
 
+float lat = 0.0f, lng = 0.0f, age_s = -1.0f;
+float alt_m = 0.0f, speed_kmh = -1.0f, course_deg = -1.0f, hdop = -1.0f;
+uint16_t year = 0;
+uint8_t month = 0, day = 0, hour = 0, minute = 0, second = 0, centisecond = 0, sats = 0;
+
 
 
 void setup() {
@@ -28,6 +33,8 @@ void setup() {
   analogReadResolution(12);
   
   ss.begin(GPSBaud);
+
+  
 }
 
 
@@ -39,6 +46,8 @@ void loop() {
   char messagelora[] = "lora transmission";
   char message2m[] = "2m transmission";
 
+
+
   solarvoltage = analogRead(vsensesolar_pin);
   batvoltage = analogRead(vsensebat_pin);
   int uptime = millis() / 1000;
@@ -49,16 +58,7 @@ void loop() {
   //Serial.print(messagelora);
   //Serial.print(message2m);
 
-  // the following things must be transmitted periodically:
-  // a range of packet lengths to test how many characters are usable,
-  // packets with a wide veriaty of characters so we can tell which ones can be used for encoding,
-  // packets in clusters, as in many consecutive transmission in a row to test large data thoughputs
-
-  // Mixed radix encoding should probably be used, same as big number encoding on traquito wspr
-
-  // aprs may have a comment message limit of 67 chars, although not certain
-  // i think aprs has a min 5s between packets
-  // so possibly test alternating callsign to bypass
+  // SEE README FOR INSTRUCTIONS
 
   /*
   for (int i = 0; i < 3; i++) {
@@ -75,16 +75,28 @@ void loop() {
   	// This sketch displays information every time a new sentence is correctly encoded.
 	while (ss.available() > 0) {
 		if (gps.encode(ss.read())) {
-			displayInfo();
+			  displayInfo(lat, lng, age_s,
+              year, month, day,
+              hour, minute, second, centisecond,
+              alt_m, speed_kmh, course_deg,
+              sats, hdop);
+
+  Serial.print("Lat: "); Serial.println(lat, 6);
+  Serial.print("Lng: "); Serial.println(lng, 6);
+  Serial.print("Age (s): "); Serial.println(age_s, 2);
+  Serial.print("Date: "); Serial.print(day); Serial.print("/"); Serial.print(month); Serial.print("/"); Serial.println(year);
+  Serial.print("Time (UTC): ");
+  Serial.print(hour); Serial.print(":"); Serial.print(minute); Serial.print(":"); Serial.println(second);
+  Serial.print("Alt (m): "); Serial.println(alt_m, 2);
+  Serial.print("Speed (km/h): "); Serial.println(speed_kmh, 2);
+  Serial.print("Course (deg): "); Serial.println(course_deg, 2);
+  Serial.print("Satellites: "); Serial.println(sats);
+  Serial.print("HDOP: "); Serial.println(hdop, 2);
+
+  delay(1000);
       
 		}
 	}
-
-	if (millis() > 5000 && gps.charsProcessed() < 10) {
-		Serial.println(F("No GPS detected: check wiring."));
-		while(true);
-	}
-
 }
 
 
