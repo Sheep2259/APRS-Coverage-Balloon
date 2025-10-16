@@ -7,6 +7,9 @@
 #include <SoftwareSerial.h>
 #include <GPS.h>
 #include <globals.h>
+#include <BigNumber.h>
+#include <tuple>
+#include <vector>
 
 int batvoltage;
 int solarvoltage;
@@ -14,9 +17,21 @@ int counter = 0;
 int seconds;
 
 float lat = 0.0f, lng = 0.0f, age_s = -1.0f;
-float alt_m = 0.0f, speed_kmh = -1.0f, course_deg = -1.0f, hdop = -1.0f;
+float alt = 0.0f, speed_kmh = -1.0f, course_deg = -1.0f, hdop = -1.0f;
 uint16_t year = 0;
 uint8_t month = 0, day = 0, hour = 0, minute = 0, second = 0, centisecond = 0, sats = 0;
+
+
+// structure of the data that we feed into the mixed radix encoder (not done)
+std::vector<std::tuple<uint16_t, uint16_t>> digits_and_bases = {
+    //{frequency, 1}, // 0 for vhf (2m), 1 for uhf (lora)
+    {second, 60},
+    {sats, 40},
+    {alt, 14000},
+    {}
+};
+
+
 
 
 
@@ -34,7 +49,8 @@ void setup() {
   
   ss.begin(GPSBaud);
 
-  
+  BigNumber::begin ();
+
 }
 
 
@@ -78,7 +94,7 @@ void loop() {
 			  displayInfo(lat, lng, age_s,
               year, month, day,
               hour, minute, second, centisecond,
-              alt_m, speed_kmh, course_deg,
+              alt, speed_kmh, course_deg,
               sats, hdop);
 
   Serial.print("Lat: "); Serial.println(lat, 6);
@@ -87,7 +103,7 @@ void loop() {
   Serial.print("Date: "); Serial.print(day); Serial.print("/"); Serial.print(month); Serial.print("/"); Serial.println(year);
   Serial.print("Time (UTC): ");
   Serial.print(hour); Serial.print(":"); Serial.print(minute); Serial.print(":"); Serial.println(second);
-  Serial.print("Alt (m): "); Serial.println(alt_m, 2);
+  Serial.print("Alt (m): "); Serial.println(alt, 2);
   Serial.print("Speed (km/h): "); Serial.println(speed_kmh, 2);
   Serial.print("Course (deg): "); Serial.println(course_deg, 2);
   Serial.print("Satellites: "); Serial.println(sats);
