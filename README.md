@@ -1,3 +1,11 @@
+This code is for a rp2040 and sx1278 based superpressure picoballoon, 
+designed to test the coverage and reliability of the aprs network for upcoming balloons.
+It uses mixed radix and base 91 encoding to efficiently use the limited aprs payload.
+
+
+
+
+
 things that need implementation
 
 
