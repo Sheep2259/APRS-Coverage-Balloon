@@ -113,6 +113,17 @@ void loop() {
 
         MRencode_convert(hdop, alt, speed_kmh, course_deg, batvoltage, solarvoltage, &enc_alt, &enc_speed, &enc_hdop, &enc_bat, &enc_pv);
 
+        std::vector<std::tuple<uint16_t, uint16_t>> digits_and_bases = {
+        //{frequency, 1}, // 0 for vhf (2m), 1 for uhf (lora)
+        {enc_alt, 280},
+        {sats, 40},
+        {enc_speed, 62},
+        {enc_hdop, 270},
+        {enc_bat, 410},
+        {enc_pv, 410},
+        {counter, 1000}
+        };
+
         BigNumber intpayload = encodeMixedRadix(digits_and_bases);
 
         String base91payload = toBase91(intpayload);
@@ -140,14 +151,7 @@ void loop() {
   delay(1000);
       
 		}
-	}
-  
-
-
-
-
-  //BigNumber encoded = encodeMixedRadix(digits_and_bases);
-  //Serial.println(encoded);
+	}  
 }
 
 
