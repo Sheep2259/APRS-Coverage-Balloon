@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <rpi_defs.h>
+#include <geofence.h>
 
   SX1278 radio = new Module(sxNSS_pin, sxDIO0_pin, sxRESET_pin, sxDIO1_pin);
   AFSKClient audio(&radio, sxDIO2_pin);
@@ -14,8 +15,11 @@
 
 void transmit_2m(char callsign[], char destination[], char latitude[], char longitude[], char message[]){
 
+  if (GEOFENCE_no_tx){ // dont do anything if tx disallowed
+    return;
+  }
   // initialize SX1278 for 2m APRS
-  int beginfskstate = radio.beginFSK(144.8);
+  int beginfskstate = radio.beginFSK(GEOFENCE_APRS_frequency / 1000000);
 
   // initialize AX.25 client
   // source station SSID:         0
@@ -34,6 +38,10 @@ void transmit_2m(char callsign[], char destination[], char latitude[], char long
 
 
 void transmit_lora(char callsign[], char destination[], char latitude[], char longitude[], char message[]){
+
+    if (GEOFENCE_no_tx){ // dont do anything if tx disallowed
+    return;
+  }
 
   // initialize SX1278 with the settings necessary for LoRa iGates
   Serial.print(F("[SX1278] Initializing ... "));

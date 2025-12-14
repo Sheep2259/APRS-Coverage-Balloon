@@ -11,6 +11,7 @@
 #include <tuple>
 #include <vector>
 #include <encoder.h>
+#include <geofence.h>
 
 int batvoltage;
 int solarvoltage;
@@ -38,7 +39,7 @@ char message2m[] = "2m transmission";
 
 
 
-// structure (and bases) of the data that we feed into the mixed radix encoder (not done)
+// structure (and bases) of the data that we feed into the mixed radix encoder, updated every gps read
 std::vector<std::tuple<uint16_t, uint16_t>> digits_and_bases = {
     //{frequency, 1}, // 0 for vhf (2m), 1 for uhf (lora)
     {enc_alt, 280},
@@ -63,6 +64,8 @@ void setup() {
   SPI.setSCK(sxSCK_pin); // SCK
   SPI.setCS(sxCS_pin);   // CSn
   SPI.begin();
+
+  GEOFENCE_position(lat, lng);
 
   analogReadResolution(12);
   
@@ -148,7 +151,7 @@ void loop() {
   Serial.print("Satellites: "); Serial.println(sats);
   Serial.print("HDOP: "); Serial.println(hdop, 2);
 
-  delay(1000);
+  delay(500);
       
 		}
 	}  
