@@ -19,7 +19,7 @@ void transmit_2m(char callsign[], char destination[], char latitude[], char long
     return;
   }
   // initialize SX1278 for 2m APRS
-  int beginfskstate = radio.beginFSK(GEOFENCE_2mAPRS_frequency / 1000000);
+  int beginfskstate = radio.beginFSK(GEOFENCE_2mAPRS_frequency);
 
   // initialize AX.25 client
   // source station SSID:         0
@@ -47,9 +47,9 @@ void transmit_lora(char callsign[], char destination[], char latitude[], char lo
   Serial.print(F("[SX1278] Initializing ... "));
   // frequency:                   433.775 MHz
   // bandwidth:                   125 kHz
-  // spreading factor:            9
-  // coding rate:                 4/7
-  int radiobeginstate = radio.begin(433.775, 125, 9, 7);
+  // spreading factor:            12
+  // coding rate:                 4/5
+  int radiobeginstate = radio.begin(GEOFENCE_loraAPRS_frequency, 125, GEOFENCE_loraAPRS_sf, 5);
 
   // initialize APRS client
   Serial.print(F("[APRS] Initializing ... "));

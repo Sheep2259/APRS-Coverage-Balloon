@@ -10,6 +10,8 @@
 
 bool GEOFENCE_no_tx = false;
 float GEOFENCE_2mAPRS_frequency = 144.800;
+float GEOFENCE_loraAPRS_frequency = 433.775;
+unsigned GEOFENCE_loraAPRS_sf = 12;
 
 /*
 	Adapted version of pointInPolygon() function from:	http://alienryderflex.com/polygon/
@@ -44,7 +46,7 @@ int32_t pointInPolygonF(int32_t polyCorners, float * polygon, float latitude, fl
 /*
 	Changes GEOFENCE_2mAPRS_frequency and GEOFENCE_no_tx global variables based on the input coordinates.
 	
-	FREQUENCIES:
+	2m FREQUENCIES:
 						Africa				144.800
 						Europe				144.800
 						Russia				144.800
@@ -69,85 +71,97 @@ int32_t pointInPolygonF(int32_t polyCorners, float * polygon, float latitude, fl
 						New Zealand			144.575
 						Indonesia			144.390
 						Malaysia			144.390
+	
+	lora FREQUENCIES:
+	UK					439.9125
+	Europe				433.775
+	Asia				433.775
+	Americas			433.775
+	Indonesia/singapore 433.400
 		
 	Expected input FLOAT for latitude and longitude as in GPS_UBX_latitude_Float and GPS_UBX_longitude_Float.
 */
 
 void GEOFENCE_position(float latitude, float longitude)
 {
+    GEOFENCE_no_tx = false;
+	GEOFENCE_2mAPRS_frequency = 144.800;
+	GEOFENCE_loraAPRS_frequency = 433.775;
+	GEOFENCE_loraAPRS_sf = 12;
 
-	// SECTOR 1
-	if(longitude > -38.0 && longitude < 73.0)
-	{
-		
-		// S 1/2
-		if(latitude > 0.0)
-		{
-			if(pointInPolygonF(9, UKF, latitude, longitude) == 1)				{GEOFENCE_no_tx = false; GEOFENCE_2mAPRS_frequency = 144.800000;}
-			else if(pointInPolygonF(10, LatviaF, latitude, longitude) == 1)		{GEOFENCE_no_tx = false; GEOFENCE_2mAPRS_frequency = 144.800000;}
-			else if(pointInPolygonF(5, YemenF, latitude, longitude) == 1)		{GEOFENCE_no_tx = false; GEOFENCE_2mAPRS_frequency = 144.800000;}
-			else																{GEOFENCE_no_tx = false; GEOFENCE_2mAPRS_frequency = 144.800000;}
-		}
-		
-		// S 2/2
-		else
-		{
-			if(pointInPolygonF(9, BrazilF, latitude, longitude) == 1)			{GEOFENCE_no_tx = false; GEOFENCE_2mAPRS_frequency = 145.570000;}
-			else																{GEOFENCE_no_tx = false; GEOFENCE_2mAPRS_frequency = 144.800000;}
-		}
-	}
-	
-	// SECTOR 2
-	else if(longitude <= -38.0)
-	{
-		
-		// S 1/2
-		if(latitude > 12.5)
-		{
-																				{GEOFENCE_no_tx = false; GEOFENCE_2mAPRS_frequency = 144.390000;}
-		}
-		
-		// S 2/2
-		else
-		{
-			if(pointInPolygonF(8, ArgParUruF, latitude, longitude) == 1)		{GEOFENCE_no_tx = false; GEOFENCE_2mAPRS_frequency = 144.930000;}
-			else if(pointInPolygonF(9, BrazilF, latitude, longitude) == 1)		{GEOFENCE_no_tx = false; GEOFENCE_2mAPRS_frequency = 145.570000;}
-			else if(pointInPolygonF(7, VenezuelaF, latitude, longitude) == 1)	{GEOFENCE_no_tx = false; GEOFENCE_2mAPRS_frequency = 145.010000;}
-			else if(pointInPolygonF(5, CostNicPanF, latitude, longitude) == 1)	{GEOFENCE_no_tx = false; GEOFENCE_2mAPRS_frequency = 145.010000;}
-			else																{GEOFENCE_no_tx = false; GEOFENCE_2mAPRS_frequency = 144.390000;}
-		}
-	}
-	
-	// SECTOR 3
-	else if(longitude >= 73.0)
-	{
-		
-		// S 1/2
-		if(latitude > 19.2)
-		{	
-			if(pointInPolygonF(6, North_KoreaF, latitude, longitude) == 1)		{GEOFENCE_no_tx = false; GEOFENCE_2mAPRS_frequency = 145.525000;}	
-			else if(pointInPolygonF(12, ChinaF, latitude, longitude) == 1)		{GEOFENCE_no_tx = false; GEOFENCE_2mAPRS_frequency = 144.640000;}
-			else if(pointInPolygonF(7, JapanF, latitude, longitude) == 1)		{GEOFENCE_no_tx = false; GEOFENCE_2mAPRS_frequency = 144.660000;}		
-			else if(pointInPolygonF(5, South_KoreaF, latitude, longitude) == 1)	{GEOFENCE_no_tx = false; GEOFENCE_2mAPRS_frequency = 144.620000;}
-			else if(pointInPolygonF(5, ThailandF, latitude, longitude) == 1)	{GEOFENCE_no_tx = false; GEOFENCE_2mAPRS_frequency = 145.525000;}
-			else																{GEOFENCE_no_tx = false; GEOFENCE_2mAPRS_frequency = 144.800000;}
-		}
-		
-		// S 2/2
-		else
-		{
-			if(pointInPolygonF(6, AustraliaF, latitude, longitude) == 1)		{GEOFENCE_no_tx = false; GEOFENCE_2mAPRS_frequency = 145.175000;}
-			else if(pointInPolygonF(5, New_ZealandF, latitude, longitude) == 1)	{GEOFENCE_no_tx = false; GEOFENCE_2mAPRS_frequency = 144.575000;}
-			else if(pointInPolygonF(5, ThailandF, latitude, longitude) == 1)	{GEOFENCE_no_tx = false; GEOFENCE_2mAPRS_frequency = 145.525000;}
-			else																{GEOFENCE_no_tx = false; GEOFENCE_2mAPRS_frequency = 144.390000;}
-		}
-	}
-	
-	// shouldn't get here
-	else
-	{
-																				{GEOFENCE_no_tx = false; GEOFENCE_2mAPRS_frequency = 144.800000;}
-	}
+    // --- PRIMARY ZONES (Specific) ---
+    if(pointInPolygonF(9, ArgParUruF, latitude, longitude) == 1)
+    {
+        GEOFENCE_2mAPRS_frequency = 144.930000;
+        GEOFENCE_loraAPRS_frequency = 433.775;
+    }
+    else if(pointInPolygonF(7, AustraliaF, latitude, longitude) == 1)
+    {
+        GEOFENCE_2mAPRS_frequency = 145.175000;
+        GEOFENCE_loraAPRS_frequency = 433.775;
+    }
+    else if(pointInPolygonF(10, BrazilF, latitude, longitude) == 1)
+    {
+        GEOFENCE_2mAPRS_frequency = 145.570000;
+        GEOFENCE_loraAPRS_frequency = 433.775;
+    }
+    else if(pointInPolygonF(6, CostNicPanF, latitude, longitude) == 1)
+    {
+        GEOFENCE_2mAPRS_frequency = 145.010000;
+        GEOFENCE_loraAPRS_frequency = 433.775;
+    }
+    else if(pointInPolygonF(8, VenezuelaF, latitude, longitude) == 1)
+    {
+        GEOFENCE_2mAPRS_frequency = 145.010000;
+        GEOFENCE_loraAPRS_frequency = 433.775;
+    }
+    else if(pointInPolygonF(5, NewZealand, latitude, longitude) == 1)
+    {
+        GEOFENCE_2mAPRS_frequency = 144.575;
+        GEOFENCE_loraAPRS_frequency = 433.775;
+    }
+    else if(pointInPolygonF(10, UK, latitude, longitude) == 1)
+    {
+        GEOFENCE_2mAPRS_frequency = 144.800000;
+        GEOFENCE_loraAPRS_frequency = 439.9125;
+    }
+    else if(pointInPolygonF(9, Poland, latitude, longitude) == 1)
+    {
+        GEOFENCE_2mAPRS_frequency = 144.800000;
+        GEOFENCE_loraAPRS_frequency = 434.855;
+		GEOFENCE_loraAPRS_sf = 9;
+    }
+    else if(pointInPolygonF(5, Turkmenistan, latitude, longitude) == 1)
+    {
+        GEOFENCE_2mAPRS_frequency = 144.800000;
+        GEOFENCE_loraAPRS_frequency = 434.855;
+    }
+    else if(pointInPolygonF(26, China, latitude, longitude) == 1)
+    {
+        GEOFENCE_2mAPRS_frequency = 144.640000;
+        GEOFENCE_loraAPRS_frequency = 433.775;
+    }
+    else if(pointInPolygonF(9, Japan, latitude, longitude) == 1)
+    {
+        GEOFENCE_2mAPRS_frequency = 144.660000;
+        GEOFENCE_loraAPRS_frequency = 433.775;
+    }
+    else if(pointInPolygonF(7, SingaporeArea, latitude, longitude) == 1)
+    {
+        GEOFENCE_2mAPRS_frequency = 144.390;
+        GEOFENCE_loraAPRS_frequency = 433.400;
+    }
+
+    // --- SECONDARY ZONES (General) ---
+    else if(pointInPolygonF(7, Americas, latitude, longitude) == 1)
+    {
+        GEOFENCE_2mAPRS_frequency = 144.390;
+    }
+
+    else
+    {
+        GEOFENCE_2mAPRS_frequency = 144.800;
+		GEOFENCE_loraAPRS_frequency = 433.775;
+		GEOFENCE_loraAPRS_sf = 12;
+    }
 }
-
-
