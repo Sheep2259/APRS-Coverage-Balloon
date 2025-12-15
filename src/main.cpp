@@ -53,6 +53,8 @@ std::vector<std::tuple<uint16_t, uint16_t>> digits_and_bases = {
 
 char base91payload[150];
 
+unsigned long lastTxTime = 0;
+const unsigned long TX_INTERVAL = 3000; // 3 seconds
 
 
 void setup() {
@@ -83,83 +85,84 @@ void setup() {
 
 void loop() {
 
-  solarvoltage = analogRead(vsensesolar_pin);
-  batvoltage = analogRead(vsensebat_pin);
-  int uptime = millis() / 1000;
 
 
-  unsigned long start = millis(); // start of loop time
-
-	while (Serial2.available() > 0 && (millis() - start < 1000)) { // give gps loop max of 1s to complete, to avoid getting stuck 
+	while (Serial2.available() > 0) { // give gps loop max of 1s to complete, to avoid getting stuck && ((millis() - start) < 3000)
 		if (gps.encode(Serial2.read())) {
 			  displayInfo(lat, lng, age_s,
               year, month, day,
               hour, minute, second, centisecond,
               alt, speed_kmh, course_deg,
               sats, hdop);
-        
-
-        GEOFENCE_position(lat, lng);
-        
-        aprsFormatLat(lat, latitude, sizeof(latitude));
-        aprsFormatLng(lng, longitude, sizeof(longitude));
-
-        MRencode_convert(hdop, alt, speed_kmh, course_deg, batvoltage, solarvoltage, &enc_alt, &enc_speed, &enc_hdop, &enc_bat, &enc_pv);
-
-        BigNumber intpayload = encodeMixedRadix(digits_and_bases);
-
-        String tempPayload = toBase91(intpayload);
-        
-        memset(base91payload, 0, sizeof(base91payload));
-
-        tempPayload.toCharArray(base91payload, 150);
-     
+            
 		}
 	} 
 
-  Serial.print("Lat: "); Serial.println(lat, 6);
-  Serial.print("Lng: "); Serial.println(lng, 6);
-  Serial.print("Age (s): "); Serial.println(age_s, 2);
-  Serial.print("Date: "); Serial.print(day); Serial.print("/"); Serial.print(month); Serial.print("/"); Serial.println(year);
-  Serial.print("Time (UTC): ");
-  Serial.print(hour); Serial.print(":"); Serial.print(minute); Serial.print(":"); Serial.println(second);
-  Serial.print("Alt (m): "); Serial.println(alt, 2);
-  Serial.print("Speed (km/h): "); Serial.println(speed_kmh, 2);
-  Serial.print("Course (deg): "); Serial.println(course_deg, 2);
-  Serial.print("Satellites: "); Serial.println(sats);
-  Serial.print("HDOP: "); Serial.println(hdop, 2);
-  Serial.print("Counter: "); Serial.println(counter);
-  Serial.println();
-  
 
-  std::vector<std::tuple<uint16_t, uint16_t>> digits_and_bases = {
-  //{frequency, 1}, // 0 for vhf (2m), 1 for uhf (lora)
-  {enc_alt, 720},
-  {sats, 40},
-  {enc_speed, 62},
-  {enc_hdop, 270},
-  {enc_bat, 410},
-  {enc_pv, 410},
-  {counter, 1000}
-  };
+  if (millis() - lastTxTime >= TX_INTERVAL) {
+    lastTxTime = millis(); // Reset timer
+
+    solarvoltage = analogRead(vsensesolar_pin);
+    batvoltage = analogRead(vsensebat_pin);
+    int uptime = millis() / 1000;
+
+    GEOFENCE_position(lat, lng);
+          
+    aprsFormatLat(lat, latitude, sizeof(latitude));
+    aprsFormatLng(lng, longitude, sizeof(longitude));
+
+    MRencode_convert(hdop, alt, speed_kmh, course_deg, batvoltage, solarvoltage, &enc_alt, &enc_speed, &enc_hdop, &enc_bat, &enc_pv);
+
+    BigNumber intpayload = encodeMixedRadix(digits_and_bases);
+
+    String tempPayload = toBase91(intpayload);
+          
+    memset(base91payload, 0, sizeof(base91payload));
+
+    tempPayload.toCharArray(base91payload, 150);
+
+    Serial.print("Lat: "); Serial.println(lat, 6);
+    Serial.print("Lng: "); Serial.println(lng, 6);
+    Serial.print("Age (s): "); Serial.println(age_s, 2);
+    Serial.print("Date: "); Serial.print(day); Serial.print("/"); Serial.print(month); Serial.print("/"); Serial.println(year);
+    Serial.print("Time (UTC): ");
+    Serial.print(hour); Serial.print(":"); Serial.print(minute); Serial.print(":"); Serial.println(second);
+    Serial.print("Alt (m): "); Serial.println(alt, 2);
+    Serial.print("Speed (km/h): "); Serial.println(speed_kmh, 2);
+    Serial.print("Course (deg): "); Serial.println(course_deg, 2);
+    Serial.print("Satellites: "); Serial.println(sats);
+    Serial.print("HDOP: "); Serial.println(hdop, 2);
+    Serial.print("Counter: "); Serial.println(counter);
+    Serial.println();
+    
+
+    std::vector<std::tuple<uint16_t, uint16_t>> digits_and_bases = {
+    //{frequency, 1}, // 0 for vhf (2m), 1 for uhf (lora)
+    {enc_alt, 720},
+    {sats, 40},
+    {enc_speed, 62},
+    {enc_hdop, 270},
+    {enc_bat, 410},
+    {enc_pv, 410},
+    {counter, 1000}
+    };
 
 
 
-  if ( (counter % 2) == 0) { 
-    //transmit_2m(callsign, destination, latitude, longitude, base91payload);
-    Serial.print(base91payload);
-    Serial.println(" :2m payload");
-    counter++;
+    if ( (counter % 2) == 0) { 
+      //transmit_2m(callsign, destination, latitude, longitude, base91payload);
+      Serial.print(base91payload);
+      Serial.println(" :2m payload");
+      counter++;
+    }
+
+    else {
+      //transmit_lora(callsign, destination, latitude, longitude, base91payload);
+      Serial.println(base91payload);
+      Serial.println(" :lora payload");
+      counter++;
+    }
   }
-
-  else {
-    //transmit_lora(callsign, destination, latitude, longitude, base91payload);
-    Serial.println(base91payload);
-    Serial.println(" :lora payload");
-    counter++;
-  }
-
-  delay(3000);
 }
 
 
