@@ -52,7 +52,7 @@ RadixItem payloadData[PAYLOAD_ITEMS] = {
 char base91payload[150];
 
 unsigned long lastTxTime = 0;
-const unsigned long TX_INTERVAL = 2000; // 3 seconds
+const unsigned long TX_INTERVAL = 5100; // 5.1 seconds
 
 
 void setup() {
@@ -89,7 +89,7 @@ void loop() {
 
 
 
-	while (Serial2.available() > 0) { // give gps loop max of 1s to complete, to avoid getting stuck && ((millis() - start) < 3000)
+	while (Serial2.available() > 0) {
 		if (gps.encode(Serial2.read())) {
 			  displayInfo(lat, lng, age_s,
               year, month, day,
@@ -143,7 +143,7 @@ void loop() {
 
 
     if ( (counter % 2) == 0) { 
-      //transmit_2m(callsign, destination, latitude, longitude, base91payload);
+      transmit_2m(callsign, destination, latitude, longitude, base91payload);
       Serial.print(base91payload);
       Serial.println(" :2m payload");
       rp2040.wdt_reset();
@@ -151,7 +151,7 @@ void loop() {
     }
 
     else {
-      //transmit_lora(callsign, destination, latitude, longitude, base91payload);
+      transmit_lora(callsign, destination, latitude, longitude, base91payload);
       Serial.print(base91payload);
       Serial.println(" :lora payload");
       rp2040.wdt_reset();
