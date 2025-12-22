@@ -1,4 +1,4 @@
-void displayInfo(
+void UpdateGPSInfo(
   float &lat, float &lng, float &age_s,                 // location + age (s)
   uint16_t &year, uint8_t &month, uint8_t &day,         // date (UTC)
   uint8_t &hour, uint8_t &minute, uint8_t &second, uint8_t &centisecond, // time (UTC)

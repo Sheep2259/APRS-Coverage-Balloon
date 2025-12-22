@@ -31,8 +31,8 @@ uint16_t enc_alt = 80, enc_speed = 0, enc_hdop = 0, enc_bat = 1, enc_pv = 1;
 // default aprs packet, variables change when we have more data like gps
 char callsign[] = "M7CWV";
 char destination[] = "APRS";
-char latitude[] = "0000.00N";
-char longitude[] = "00000.00E";
+char latitudechars[] = "0000.00N";
+char longitudechars[] = "00000.00E";
 char messagelora[] = "placeholder";
 char message2m[] = "placeholder";
 
@@ -91,7 +91,7 @@ void loop() {
 
 	while (Serial2.available() > 0) {
 		if (gps.encode(Serial2.read())) {
-			  displayInfo(lat, lng, age_s,
+			  UpdateGPSInfo(lat, lng, age_s,
               year, month, day,
               hour, minute, second, centisecond,
               alt, speed_kmh, course_deg,
@@ -109,8 +109,8 @@ void loop() {
 
     GEOFENCE_position(lat, lng);
           
-    aprsFormatLat(lat, latitude, sizeof(latitude));
-    aprsFormatLng(lng, longitude, sizeof(longitude));
+    aprsFormatLat(lat, latitudechars, sizeof(latitudechars));
+    aprsFormatLng(lng, longitudechars, sizeof(longitudechars));
 
     MRencode_convert(hdop, alt, speed_kmh, course_deg, solarvoltage, &enc_alt, &enc_speed, &enc_hdop, &enc_bat, &enc_pv);
 
@@ -143,7 +143,7 @@ void loop() {
 
 
     if ( (counter % 2) == 0) { 
-      transmit_2m(callsign, destination, latitude, longitude, base91payload);
+      transmit_2m(callsign, destination, latitudechars, longitudechars, base91payload);
       Serial.print(base91payload);
       Serial.println(" :2m payload");
       rp2040.wdt_reset();
@@ -151,7 +151,7 @@ void loop() {
     }
 
     else {
-      transmit_lora(callsign, destination, latitude, longitude, base91payload);
+      transmit_lora(callsign, destination, latitudechars, longitudechars, base91payload);
       Serial.print(base91payload);
       Serial.println(" :lora payload");
       rp2040.wdt_reset();
